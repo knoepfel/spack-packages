@@ -133,6 +133,12 @@ class Catch2(CMakePackage):
         "pic", when="@3: ~shared", default=True, description="Build with position-independent code"
     )
     variant("shared", when="@3:", default=False, description="Build shared library")
+    variant(
+        "threadsafe",
+        when="@3.9:",
+        default=False,
+        description="Enable thread-safe assertion and message reporting",
+    )
 
     @when("@3:")
     def patch(self):
@@ -175,6 +181,8 @@ class Catch2(CMakePackage):
             )
             args.append(self.define_from_variant("CMAKE_POSITION_INDEPENDENT_CODE", "pic"))
             args.append(self.define_from_variant("BUILD_SHARED_LIBS", "shared"))
+            if "+threadsafe" in spec:
+                args.append(self.define("CATCH_CONFIG_THREAD_SAFE_ASSERTIONS", True))
 
         return args
 
